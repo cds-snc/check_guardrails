@@ -23,11 +23,11 @@ Checking AWS for lambda log export function ...
 
 The tool checks the following guardrails:
 
-[X] Protect Root / Global Admins Account with MFA
-[x] Management of Administrative Privileges with MFA
-[X] Cloud Console Access (Developers/Application Owners) with MFA
-[ ] Enterprise Monitoring Accounts
-[X] Logging and monitoring with Lambda
+- [x] Protect Root / Global Admins Account with MFA
+- [x] Management of Administrative Privileges with MFA
+- [x] Cloud Console Access (Developers/Application Owners) with MFA
+- [ ] Enterprise Monitoring Accounts
+- [x] Logging and monitoring with Lambda
 
 You can check your AWS account using the following command:
 
