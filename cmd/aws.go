@@ -24,25 +24,25 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
 	"github.com/cdssnc/pbmm_audit/lib/aws"
+	"github.com/spf13/cobra"
 )
 
 // awsCmd represents the aws command
 var awsCmd = &cobra.Command{
 	Use:   "aws",
 	Short: "Runs checks against AWS",
-	Long: ``,
+	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		key, err:= cmd.Flags().GetString("aws_key")
-		 
+		key, err := cmd.Flags().GetString("aws_key")
+
 		if err != nil {
 			fmt.Println("Error", err)
 			return
 		}
 
-		secret, err:= cmd.Flags().GetString("aws_secret")
-		 
+		secret, err := cmd.Flags().GetString("aws_secret")
+
 		if err != nil {
 			fmt.Println("Error", err)
 			return
@@ -61,7 +61,7 @@ var awsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(awsCmd)
-	
+
 	awsCmd.PersistentFlags().String("aws_key", "", "Your AWS key")
 	awsCmd.PersistentFlags().String("aws_secret", "", "Your AWS secret")
 	awsCmd.PersistentFlags().String("lambda_function", "", "Your AWS lambda function that exports logs")

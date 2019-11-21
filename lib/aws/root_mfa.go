@@ -29,14 +29,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 
-	. "github.com/logrusorgru/aurora"
 	"github.com/kyokomi/emoji"
+	. "github.com/logrusorgru/aurora"
 )
 
-func CheckRootMFA(key string, secret string) bool{
+func CheckRootMFA(key string, secret string) bool {
 
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"),
+		Region:      aws.String("us-east-1"),
 		Credentials: credentials.NewStaticCredentials(key, secret, ""),
 	})
 
@@ -56,11 +56,11 @@ func CheckRootMFA(key string, secret string) bool{
 		return false
 	}
 
-	if (*result.SummaryMap["AccountMFAEnabled"] == 1) {
-		emoji.Println(" :white_check_mark: " , BrightGreen("Root MFA is enabled"))
+	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
+		emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
 		return true
-	}	else {
-		emoji.Println(" :skull: " , BrightRed("Root MFA is not enabled"))
+	} else {
+		emoji.Println(" :skull: ", BrightRed("Root MFA is not enabled"))
 		return false
 	}
 }

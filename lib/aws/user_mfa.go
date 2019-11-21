@@ -29,14 +29,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 
-	. "github.com/logrusorgru/aurora"
 	"github.com/kyokomi/emoji"
+	. "github.com/logrusorgru/aurora"
 )
 
-func CheckUserMFA(key string, secret string) bool{
+func CheckUserMFA(key string, secret string) bool {
 
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"),
+		Region:      aws.String("us-east-1"),
 		Credentials: credentials.NewStaticCredentials(key, secret, ""),
 	})
 
@@ -60,7 +60,7 @@ func CheckUserMFA(key string, secret string) bool{
 
 	for _, user := range result.Users {
 		if user == nil {
-				continue
+			continue
 		}
 		devices, err := svc.ListMFADevices(&iam.ListMFADevicesInput{
 			UserName: user.UserName,
@@ -69,13 +69,15 @@ func CheckUserMFA(key string, secret string) bool{
 			fmt.Println("Error", err)
 			return false
 		}
-		if( len(devices.MFADevices) != 0) { mfaAccounts++ }
+		if len(devices.MFADevices) != 0 {
+			mfaAccounts++
+		}
 	}
 
-	if (len(result.Users) != mfaAccounts){
-			emoji.Println(" :exclamation: " , Sprintf(BrightYellow("%d out of %d users have MFA active"), mfaAccounts, len(result.Users)))
+	if len(result.Users) != mfaAccounts {
+		emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d out of %d users have MFA active"), mfaAccounts, len(result.Users)))
 	} else {
-			emoji.Println(" :white_check_mark: " , BrightGreen("All user accounts use MFA"))
+		emoji.Println(" :white_check_mark: ", BrightGreen("All user accounts use MFA"))
 	}
 
 	return true

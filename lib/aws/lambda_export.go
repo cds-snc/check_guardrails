@@ -29,14 +29,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
 
-	. "github.com/logrusorgru/aurora"
 	"github.com/kyokomi/emoji"
+	. "github.com/logrusorgru/aurora"
 )
 
-func CheckLambdaExport(key string, secret string, needle string) bool{
+func CheckLambdaExport(key string, secret string, needle string) bool {
 
 	sess, err := session.NewSession(&aws.Config{
-		Region: aws.String("us-east-1"),
+		Region:      aws.String("us-east-1"),
 		Credentials: credentials.NewStaticCredentials(key, secret, ""),
 	})
 
@@ -60,15 +60,17 @@ func CheckLambdaExport(key string, secret string, needle string) bool{
 
 	for _, lf := range result.Functions {
 		if lf == nil {
-				continue
+			continue
 		}
-		if (*lf.FunctionName == needle) { found = true }
+		if *lf.FunctionName == needle {
+			found = true
+		}
 	}
 
-	if (found) {
-		emoji.Println(" :white_check_mark: " , BrightGreen("Lambda export function found"))
+	if found {
+		emoji.Println(" :white_check_mark: ", BrightGreen("Lambda export function found"))
 	} else {
-		emoji.Println(" :skull: " , Bold(BrightRed("Lambda export function missing")))
+		emoji.Println(" :skull: ", Bold(BrightRed("Lambda export function missing")))
 	}
 
 	return true

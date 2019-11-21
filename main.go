@@ -24,5 +24,5 @@ package main
 import "github.com/cdssnc/pbmm_audit/cmd"
 
 func main() {
-  cmd.Execute()
+	cmd.Execute()
 }
