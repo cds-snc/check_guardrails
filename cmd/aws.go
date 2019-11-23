@@ -24,7 +24,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/cdssnc/pbmm_audit/lib/aws"
+	"github.com/cdssnc/check_guardrails/lib/aws"
 	"github.com/spf13/cobra"
 )
 

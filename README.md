@@ -1,10 +1,10 @@
-# PBMM Audit
+# Check Guardrails
 
 The purpose of this tool is to check if a cloud vendor account implements the guardrails specified by Shared Services Canada. The tool currently only support AWS, but Azure support will be coming.
 
 Ex:
 ```
-➜  pbmm_audit aws --aws_key=... --aws_secret=...
+➜  check_guardrails aws --aws_key=... --aws_secret=...
 
 Checking AWS root account for MFA ...
  💀  Root MFA is not enabled
@@ -31,7 +31,7 @@ The tool checks the following guardrails:
 
 You can check your AWS account using the following command:
 
-`pbmm_audit aws --aws_key=YOUR_KEY --aws_secret=YOUR_SECRET`
+`check_guardrails aws --aws_key=YOUR_KEY --aws_secret=YOUR_SECRET`
 
 Refer to `aws.policy.json` to see what account access the tool needs.
 

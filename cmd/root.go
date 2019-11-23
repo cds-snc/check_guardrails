@@ -23,8 +23,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -34,7 +35,7 @@ var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "pbmm_audit",
+	Use:   "check_guardrails",
 	Short: "Audits cloud provider for compliace with PBMM guardrails",
 	Long: `Shared Services Canada requires that all PBMM classified applications
   running in the cloud implement specific account guardrails. This tool uses the
@@ -61,7 +62,7 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.pbmm_audit.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.check_guardrails.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -81,9 +82,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".pbmm_audit" (without extension).
+		// Search config in home directory with name ".check_guardrails" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".pbmm_audit")
+		viper.SetConfigName(".check_guardrails")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
