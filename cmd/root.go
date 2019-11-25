@@ -26,8 +26,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
@@ -75,15 +73,15 @@ func initConfig() {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
+
+		dir, err := os.Getwd()
 		if err != nil {
 			fmt.Println(err)
 			os.Exit(1)
 		}
 
 		// Search config in home directory with name ".check_guardrails" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(dir)
 		viper.SetConfigName(".check_guardrails")
 	}
 

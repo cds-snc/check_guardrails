@@ -26,6 +26,7 @@ import (
 
 	"github.com/cdssnc/check_guardrails/lib/aws"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // awsCmd represents the aws command
@@ -34,19 +35,12 @@ var awsCmd = &cobra.Command{
 	Short: "Runs checks against AWS",
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
-		key, err := cmd.Flags().GetString("aws_key")
 
-		if err != nil {
-			fmt.Println("Error", err)
-			return
-		}
+		key := viper.GetString("aws_key")
 
-		secret, err := cmd.Flags().GetString("aws_secret")
 
-		if err != nil {
-			fmt.Println("Error", err)
-			return
-		}
+		secret := viper.GetString("aws_secret")
+
 		fmt.Println("")
 		aws.CheckRootMFA(key, secret)
 		fmt.Println("")
@@ -65,5 +59,8 @@ func init() {
 	awsCmd.PersistentFlags().String("aws_key", "", "Your AWS key")
 	awsCmd.PersistentFlags().String("aws_secret", "", "Your AWS secret")
 	awsCmd.PersistentFlags().String("lambda_function", "", "Your AWS lambda function that exports logs")
+
+	viper.BindPFlag("aws_key", awsCmd.PersistentFlags().Lookup("aws_key"))
+	viper.BindPFlag("aws_secret", awsCmd.PersistentFlags().Lookup("aws_secret"))
 
 }

@@ -17,3 +17,4 @@
 vendor/
 
 check_guardrails
+.check_guardrails.yaml
