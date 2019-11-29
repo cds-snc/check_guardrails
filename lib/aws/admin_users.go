@@ -25,8 +25,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 
@@ -138,17 +136,7 @@ func IsUserAdmin(svc *iam.IAM, user *iam.UserDetail, admin string) bool {
 	return false
 }
 
-func CheckAdminUsers(key string, secret string) bool {
-
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String("us-east-1"),
-		Credentials: credentials.NewStaticCredentials(key, secret, ""),
-	})
-
-	if err != nil {
-		fmt.Println("Error", err)
-		return false
-	}
+func CheckAdminUsers(sess *session.Session) bool {
 
 	fmt.Println(Green("Checking AWS for users with admin policies attached ..."))
 

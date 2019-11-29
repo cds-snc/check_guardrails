@@ -24,8 +24,6 @@ package aws
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 
@@ -33,17 +31,7 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-func CheckRootMFA(key string, secret string) bool {
-
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String("us-east-1"),
-		Credentials: credentials.NewStaticCredentials(key, secret, ""),
-	})
-
-	if err != nil {
-		fmt.Println("Error", err)
-		return false
-	}
+func CheckRootMFA(sess *session.Session) bool {
 
 	fmt.Println(Green("Checking AWS root account for MFA ..."))
 

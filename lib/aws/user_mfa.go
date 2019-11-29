@@ -24,28 +24,17 @@ package aws
 import (
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
+	"github.com/spf13/viper"
 )
 
-func CheckUserMFA(key string, secret string) bool {
+func CheckUserMFA(sess *session.Session) bool {
 
-	sess, err := session.NewSession(&aws.Config{
-		Region:      aws.String("us-east-1"),
-		Credentials: credentials.NewStaticCredentials(key, secret, ""),
-	})
-
-	if err != nil {
-		fmt.Println("Error", err)
-		return false
-	}
-
-	fmt.Println(Green("Checking AWS users accounts for MFA ..."))
+	fmt.Println(Green("Checking AWS console users accounts for MFA ..."))
 
 	svc := iam.New(sess)
 
@@ -57,27 +46,37 @@ func CheckUserMFA(key string, secret string) bool {
 	}
 
 	mfaAccounts := 0
+	consoleUsers := 0
+	breakglassAccounts := viper.GetInt("breakglass_accounts")
 
 	for _, user := range result.Users {
 		if user == nil {
 			continue
 		}
-		devices, err := svc.ListMFADevices(&iam.ListMFADevicesInput{
+
+		password, _ := svc.GetLoginProfile(&iam.GetLoginProfileInput{
 			UserName: user.UserName,
 		})
-		if err != nil {
-			fmt.Println("Error", err)
-			return false
-		}
-		if len(devices.MFADevices) != 0 {
-			mfaAccounts++
+
+		if password.LoginProfile != nil {
+			consoleUsers++
+			devices, err := svc.ListMFADevices(&iam.ListMFADevicesInput{
+				UserName: user.UserName,
+			})
+			if err != nil {
+				fmt.Println("Error", err)
+				return false
+			}
+			if len(devices.MFADevices) != 0 {
+				mfaAccounts++
+			}
 		}
 	}
 
-	if len(result.Users) != mfaAccounts {
-		emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d out of %d users have MFA active"), mfaAccounts, len(result.Users)))
+	if (consoleUsers - breakglassAccounts) != mfaAccounts {
+		emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d out of %d console users have MFA active"), mfaAccounts, consoleUsers))
 	} else {
-		emoji.Println(" :white_check_mark: ", BrightGreen("All user accounts use MFA"))
+		emoji.Println(" :white_check_mark: ", Sprintf(BrightGreen("All user accounts use MFA (taking into account %d breakglass accounts)"), breakglassAccounts))
 	}
 
 	return true

@@ -1,0 +1,4 @@
+aws_key:
+aws_secret:
+aws_region: ca-central-1
+breakglass_accounts: 0
