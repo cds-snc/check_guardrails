@@ -25,36 +25,38 @@ import (
 	"fmt"
 
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/aws/aws-sdk-go/service/sso"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
 )
 
-func CheckRootMFA(sess *session.Session, output string) bool {
+func CheckSSO(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS root account for MFA ..."))
+		fmt.Println(Green("Checking AWS SSO ..."))
 	}
 
-	svc := iam.New(sess)
+	svc := sso.New(sess)
 
-	result, err := svc.GetAccountSummary(&iam.GetAccountSummaryInput{})
+	result, err := svc.ListAccounts(&sso.ListAccountsInput{})
 
 	if err != nil {
 		fmt.Println("Error", err)
 		return false
 	}
 
-	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
+	fmt.Println(result)
+
+	if len(result.AccountList) == 0 {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
+			emoji.Println(" :white_check_mark: ", BrightGreen("No SSO accounts found"))
 			fmt.Println("")
 		}
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Root MFA is not enabled"))
+			emoji.Println(" :skull: ", BrightRed("AWS SSO accounts found"))
 			fmt.Println("")
 		}
 		return false

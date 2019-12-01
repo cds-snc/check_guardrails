@@ -29,6 +29,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ec2"
 
 	cg "github.com/cdssnc/check_guardrails/lib/aws"
 	"github.com/spf13/cobra"
@@ -47,11 +48,6 @@ var awsCmd = &cobra.Command{
 	Long:  ``,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		viper.SetDefault("output", "none")
-		viper.SetDefault("aws_region", "ca-central-1")
-		viper.SetDefault("breakglass_accounts", 0)
-		viper.SetDefault("lambda_function", "LandingZoneLocalSNSNotificationForwarder")
-
 		key := viper.GetString("aws_key")
 		secret := viper.GetString("aws_secret")
 		region := viper.GetString("aws_region")
@@ -68,21 +64,31 @@ var awsCmd = &cobra.Command{
 			return
 		}
 
+		regionSvc := ec2.New(sess)
+		regions, err := regionSvc.DescribeRegions(&ec2.DescribeRegionsInput{})
+
+		if err != nil {
+			fmt.Println("Error", err)
+			return
+		}
+
 		audit := AwsAudit{}
 
-		fmt.Println("")
+		if output == "debug" {
+			fmt.Println("")
+		}
 
-		audit.RootMFAEnabled = cg.CheckRootMFA(sess)
-		fmt.Println("")
-
-		cg.CheckUserMFA(sess)
-		fmt.Println("")
-
-		cg.CheckAdminUsers(sess)
-		fmt.Println("")
-
-		audit.LamdbaExportExists = cg.CheckLambdaExport(sess, lambdaFunction)
-		fmt.Println("")
+		audit.RootMFAEnabled = cg.CheckRootMFA(sess, output)
+		cg.CheckUserMFA(sess, output)
+		cg.CheckAdminUsers(sess, output)
+		audit.LamdbaExportExists = cg.CheckLambdaExport(sess, lambdaFunction, output)
+		cg.CheckPasswordPolicy(sess, output)
+		// cg.CheckSSO(sess, output)
+		cg.CheckGuardDuty(sess, output)
+		// cg.CheckEC2Residency(sess, regions, output)
+		cg.CheckS3Encryption(sess, output)
+		// cg.CheckRDSEncryption(sess, regions, output)
+		cg.CheckSecurityGroupsPort80(sess, regions, output)
 
 		if output == "json" {
 			b, _ := json.Marshal(audit)
@@ -109,6 +115,11 @@ func init() {
 	awsCmd.PersistentFlags().String("aws_region", "", "Your AWS region")
 	awsCmd.PersistentFlags().String("lambda_function", "", "Your AWS lambda function that exports logs")
 	awsCmd.PersistentFlags().String("output", "", "Output format, default: none, options: none, json")
+
+	viper.SetDefault("output", "debug")
+	viper.SetDefault("aws_region", "ca-central-1")
+	viper.SetDefault("breakglass_accounts", 0)
+	viper.SetDefault("lambda_function", "LandingZoneLocalSNSNotificationForwarder")
 
 	viper.BindPFlag("aws_key", awsCmd.PersistentFlags().Lookup("aws_key"))
 	viper.BindPFlag("aws_secret", awsCmd.PersistentFlags().Lookup("aws_secret"))

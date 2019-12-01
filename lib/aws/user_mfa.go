@@ -32,9 +32,11 @@ import (
 	"github.com/spf13/viper"
 )
 
-func CheckUserMFA(sess *session.Session) bool {
+func CheckUserMFA(sess *session.Session, output string) bool {
 
-	fmt.Println(Green("Checking AWS console users accounts for MFA ..."))
+	if output == "debug" {
+		fmt.Println(Green("Checking AWS console users accounts for MFA ..."))
+	}
 
 	svc := iam.New(sess)
 
@@ -74,10 +76,16 @@ func CheckUserMFA(sess *session.Session) bool {
 	}
 
 	if (consoleUsers - breakglassAccounts) != mfaAccounts {
-		emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d out of %d console users have MFA active"), mfaAccounts, consoleUsers))
+		if output == "debug" {
+			emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d out of %d console users have MFA active"), mfaAccounts, consoleUsers))
+			fmt.Println("")
+		}
+		return false
 	} else {
-		emoji.Println(" :white_check_mark: ", Sprintf(BrightGreen("All user accounts use MFA (taking into account %d breakglass accounts)"), breakglassAccounts))
+		if output == "debug" {
+			emoji.Println(" :white_check_mark: ", Sprintf(BrightGreen("All user accounts use MFA (taking into account %d breakglass accounts)"), breakglassAccounts))
+			fmt.Println("")
+		}
+		return true
 	}
-
-	return true
 }

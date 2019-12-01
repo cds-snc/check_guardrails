@@ -24,39 +24,61 @@ package aws
 import (
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
-
+	"github.com/aws/aws-sdk-go/service/guardduty"
 	"github.com/kyokomi/emoji"
+
 	. "github.com/logrusorgru/aurora"
 )
 
-func CheckRootMFA(sess *session.Session, output string) bool {
+func CheckGuardDuty(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS root account for MFA ..."))
+		fmt.Println(Green("Checking AWS GuardDuty ..."))
 	}
 
-	svc := iam.New(sess)
+	svc := guardduty.New(sess)
 
-	result, err := svc.GetAccountSummary(&iam.GetAccountSummaryInput{})
+	result, err := svc.ListDetectors(&guardduty.ListDetectorsInput{})
 
 	if err != nil {
 		fmt.Println("Error", err)
 		return false
 	}
 
-	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
+	if len(result.DetectorIds) == 0 {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
-			fmt.Println("")
-		}
-		return true
-	} else {
-		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Root MFA is not enabled"))
+			emoji.Println(" :skull: ", BrightRed("No GuardDuty detectors found!"))
 			fmt.Println("")
 		}
 		return false
 	}
+
+	detector := result.DetectorIds[0]
+
+	accountResult, err := svc.GetMasterAccount(&guardduty.GetMasterAccountInput{
+		DetectorId: aws.String(*detector),
+	})
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return false
+	}
+
+	if accountResult.Master != nil && accountResult.Master.RelationshipStatus != nil {
+		if *accountResult.Master.RelationshipStatus == "Enabled" {
+			if output == "debug" {
+				emoji.Println(" :white_check_mark: ", BrightGreen("GuardDuty found with master account enabled"))
+				fmt.Println("")
+			}
+			return true
+		}
+	}
+
+	if output == "debug" {
+		emoji.Println(" :skull: ", BrightRed("No GuardDuty master account found or not enabled"))
+		fmt.Println("")
+	}
+	return false
 }

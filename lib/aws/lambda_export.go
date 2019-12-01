@@ -31,9 +31,11 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-func CheckLambdaExport(sess *session.Session, needle string) bool {
+func CheckLambdaExport(sess *session.Session, needle, output string) bool {
 
-	fmt.Println(Green("Checking AWS for lambda log export function ..."))
+	if output == "debug" {
+		fmt.Println(Green("Checking AWS for lambda log export function ..."))
+	}
 
 	svc := lambda.New(sess)
 
@@ -56,11 +58,17 @@ func CheckLambdaExport(sess *session.Session, needle string) bool {
 	}
 
 	if found {
-		emoji.Println(" :white_check_mark: ", BrightGreen("Lambda export function found"))
+		if output == "debug" {
+			emoji.Println(" :white_check_mark: ", BrightGreen("Lambda export function found"))
+			fmt.Println("")
+		}
+		return true
 	} else {
-		emoji.Println(" :skull: ", Bold(BrightRed("Lambda export function missing")))
+		if output == "debug" {
+			emoji.Println(" :skull: ", Bold(BrightRed("Lambda export function missing")))
+			fmt.Println("")
+		}
+		return false
 	}
-
-	return true
 
 }

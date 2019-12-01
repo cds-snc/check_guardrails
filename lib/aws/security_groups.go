@@ -24,39 +24,38 @@ package aws
 import (
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
-
+	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/kyokomi/emoji"
+
 	. "github.com/logrusorgru/aurora"
 )
 
-func CheckRootMFA(sess *session.Session, output string) bool {
+func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegionsOutput, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS root account for MFA ..."))
+		fmt.Println(Green("Checking AWS EC2 security groups for Port 80 ingress ..."))
 	}
 
-	svc := iam.New(sess)
+	for _, region := range regions.Regions {
 
-	result, err := svc.GetAccountSummary(&iam.GetAccountSummaryInput{})
+		newSess := sess.Copy(&aws.Config{Region: aws.String(*region.RegionName)})
+		newSvc := ec2.New(newSess)
 
-	if err != nil {
-		fmt.Println("Error", err)
-		return false
-	}
+		groups, err := newSvc.DescribeSecurityGroups(&ec2.DescribeSecurityGroupsInput{})
 
-	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
-		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
-			fmt.Println("")
+		if err != nil {
+			fmt.Println("Error", err)
+			return false
 		}
-		return true
-	} else {
-		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Root MFA is not enabled"))
-			fmt.Println("")
-		}
-		return false
+
+		fmt.Println(groups)
 	}
+
+	if output == "debug" {
+		emoji.Println(" :white_check_mark: ", BrightGreen("No EC2 instances found outside ca-central-1"))
+		fmt.Println("")
+	}
+	return true
 }

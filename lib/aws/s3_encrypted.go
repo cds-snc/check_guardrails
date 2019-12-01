@@ -24,39 +24,47 @@ package aws
 import (
 	"fmt"
 
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
-
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/kyokomi/emoji"
+
 	. "github.com/logrusorgru/aurora"
 )
 
-func CheckRootMFA(sess *session.Session, output string) bool {
+func CheckS3Encryption(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS root account for MFA ..."))
+		fmt.Println(Green("Checking AWS S3 bucket encryption settings ..."))
 	}
 
-	svc := iam.New(sess)
+	svc := s3.New(sess)
 
-	result, err := svc.GetAccountSummary(&iam.GetAccountSummaryInput{})
+	result, err := svc.ListBuckets(&s3.ListBucketsInput{})
 
 	if err != nil {
 		fmt.Println("Error", err)
 		return false
 	}
 
-	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
-		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
-			fmt.Println("")
+	for _, bucket := range result.Buckets {
+
+		_, err := svc.GetBucketEncryption(&s3.GetBucketEncryptionInput{
+			Bucket: aws.String(*bucket.Name),
+		})
+
+		if err != nil {
+			if output == "debug" {
+				emoji.Println(" :skull: ", BrightRed("S3 bucket found without encryption"))
+				fmt.Println("")
+			}
+			return false
 		}
-		return true
-	} else {
-		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Root MFA is not enabled"))
-			fmt.Println("")
-		}
-		return false
 	}
+
+	if output == "debug" {
+		emoji.Println(" :white_check_mark: ", BrightGreen("No S3 bucket found without encryption"))
+		fmt.Println("")
+	}
+	return true
 }

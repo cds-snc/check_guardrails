@@ -136,9 +136,11 @@ func IsUserAdmin(svc *iam.IAM, user *iam.UserDetail, admin string) bool {
 	return false
 }
 
-func CheckAdminUsers(sess *session.Session) bool {
+func CheckAdminUsers(sess *session.Session, output string) bool {
 
-	fmt.Println(Green("Checking AWS for users with admin policies attached ..."))
+	if output == "debug" {
+		fmt.Println(Green("Checking AWS for users with admin policies attached ..."))
+	}
 
 	svc := iam.New(sess)
 
@@ -194,9 +196,15 @@ func CheckAdminUsers(sess *session.Session) bool {
 	}
 
 	if numAdmins > 0 {
-		emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d user(s) have admin policies attached"), numAdmins))
+		if output == "debug" {
+			emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d user(s) have admin policies attached"), numAdmins))
+			fmt.Println("")
+		}
 	} else {
-		emoji.Println(" :white_check_mark: ", BrightGreen("No user accounts have admin policies attached"))
+		if output == "debug" {
+			emoji.Println(" :white_check_mark: ", BrightGreen("No user accounts have admin policies attached"))
+			fmt.Println("")
+		}
 	}
 
 	return true

@@ -4,16 +4,30 @@
         {
             "Sid": "VisualEditor0",
             "Effect": "Allow",
-            "Action": "iam:ListMFADevices",
-            "Resource": "arn:aws:iam::*:user/*"
+            "Action": [
+                "s3:GetEncryptionConfiguration",
+                "iam:ListMFADevices",
+                "iam:GetLoginProfile"
+            ],
+            "Resource": [
+                "arn:aws:iam::*:user/*",
+                "arn:aws:s3:::*"
+            ]
         },
         {
             "Sid": "VisualEditor1",
             "Effect": "Allow",
             "Action": [
+                "ec2:DescribeInstances",
+                "guardduty:ListDetectors",
                 "lambda:ListFunctions",
+                "s3:ListAllMyBuckets",
+                "ec2:DescribeRegions",
+                "guardduty:GetMasterAccount",
+                "rds:DescribeDBInstances",
                 "iam:ListUsers",
                 "iam:GetAccountAuthorizationDetails",
+                "ec2:DescribeSecurityGroups",
                 "iam:GetAccountSummary"
             ],
             "Resource": "*"

@@ -31,30 +31,30 @@ import (
 	. "github.com/logrusorgru/aurora"
 )
 
-func CheckRootMFA(sess *session.Session, output string) bool {
+func CheckPasswordPolicy(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS root account for MFA ..."))
+		fmt.Println(Green("Checking AWS password policy ..."))
 	}
 
 	svc := iam.New(sess)
 
-	result, err := svc.GetAccountSummary(&iam.GetAccountSummaryInput{})
+	result, err := svc.GetAccountPasswordPolicy(&iam.GetAccountPasswordPolicyInput{})
 
 	if err != nil {
 		fmt.Println("Error", err)
 		return false
 	}
 
-	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
+	if *result.PasswordPolicy.MinimumPasswordLength >= 15 {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
+			emoji.Println(" :white_check_mark: ", BrightGreen("Password must be 15 characters or longer"))
 			fmt.Println("")
 		}
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Root MFA is not enabled"))
+			emoji.Println(" :skull: ", BrightRed("Password can be less than 15 characters"))
 			fmt.Println("")
 		}
 		return false
