@@ -87,7 +87,7 @@ func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegio
 
 				if failed {
 					if output == "debug" {
-						emoji.Println(" :skull: ", BrightRed("Security group with port 80 found"))
+						emoji.Println(" :x: ", BrightRed("Security group with port 80 found"))
 						fmt.Println("")
 					}
 					return false

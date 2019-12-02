@@ -63,7 +63,7 @@ func CheckS3Encryption(sess *session.Session, output string) bool {
 
 		if err != nil && !set[*bucket.Name] {
 			if output == "debug" {
-				emoji.Println(" :skull: ", BrightRed("S3 bucket found without encryption"))
+				emoji.Println(" :x: ", BrightRed("S3 bucket found without encryption"))
 				fmt.Println("")
 			}
 			return false

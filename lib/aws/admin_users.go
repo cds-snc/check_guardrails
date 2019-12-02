@@ -210,7 +210,7 @@ func CheckAdminUsers(sess *session.Session, output string) bool {
 	breakglassAccounts := viper.GetInt("breakglass_accounts")
 	if (numAdmins - breakglassAccounts) > 0 {
 		if output == "debug" {
-			emoji.Println(" :skull: ", Sprintf(BrightRed("%d user(s) have admin policies attached (%d expected)"), numAdmins, breakglassAccounts))
+			emoji.Println(" :x: ", Sprintf(BrightRed("%d user(s) have admin policies attached (%d expected)"), numAdmins, breakglassAccounts))
 			fmt.Println("")
 		}
 	} else {

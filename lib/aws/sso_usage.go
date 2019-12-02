@@ -56,7 +56,7 @@ func CheckSSO(sess *session.Session, output string) bool {
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("AWS SSO accounts found"))
+			emoji.Println(" :x: ", BrightRed("AWS SSO accounts found"))
 			fmt.Println("")
 		}
 		return false

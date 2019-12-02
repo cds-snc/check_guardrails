@@ -52,7 +52,7 @@ func CheckEC2Residency(sess *session.Session, regions *ec2.DescribeRegionsOutput
 
 		if len(instances.Reservations) > 0 && *region.RegionName != "ca-central-1" {
 			if output == "debug" {
-				emoji.Println(" :skull: ", BrightRed("EC2 instances found outside ca-central-1"))
+				emoji.Println(" :x: ", BrightRed("EC2 instances found outside ca-central-1"))
 				fmt.Println("")
 			}
 			return false

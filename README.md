@@ -7,7 +7,7 @@ Ex:
 ➜  check_guardrails aws --aws_key=... --aws_secret=...
 
 Checking AWS root account for MFA ...
- 💀  Root MFA is not enabled
+ ❌  Root MFA is not enabled
  
  Checking AWS root account for programmatic keys ...
  ✅  Root MFA has no programmatic keys
@@ -16,7 +16,7 @@ Checking AWS console users accounts for MFA ...
  ✅  All user accounts use MFA (taking into account 2 breakglass accounts)
  
 Checking AWS for users with admin policies attached ...
- 💀  3 user(s) have admin policies attached (2 expected)
+ ❌  3 user(s) have admin policies attached (2 expected)
  
 Checking AWS for lambda log export function ...
  ✅  Lambda export function found
@@ -28,16 +28,16 @@ Checking AWS GuardDuty ...
  ✅  GuardDuty found with master account enabled
  
 Checking AWS EC2 data residency ...
- 💀  EC2 instances found outside ca-central-1
+ ❌  EC2 instances found outside ca-central-1
  
 Checking AWS S3 bucket encryption settings ...
  ✅  No unexpected S3 bucket found without encryption
  
 Checking AWS RDS encryption settings ...
- 💀  RDS instance found without encryption
+ ❌  RDS instance found without encryption
  
 Checking AWS EC2 security groups for port 80 ingress ...
- 💀  Security group with port 80 found
+ ❌  Security group with port 80 found
 ```
 
 ## AWS implementation

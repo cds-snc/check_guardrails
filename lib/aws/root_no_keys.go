@@ -54,7 +54,7 @@ func CheckRootKeys(sess *session.Session, output string) bool {
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Root has programmatic keys"))
+			emoji.Println(" :x: ", BrightRed("Root has programmatic keys"))
 			fmt.Println("")
 		}
 		return false

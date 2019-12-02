@@ -49,7 +49,7 @@ func CheckGuardDuty(sess *session.Session, output string) bool {
 
 	if len(result.DetectorIds) == 0 {
 		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("No GuardDuty detectors found!"))
+			emoji.Println(" :x: ", BrightRed("No GuardDuty detectors found!"))
 			fmt.Println("")
 		}
 		return false
@@ -77,7 +77,7 @@ func CheckGuardDuty(sess *session.Session, output string) bool {
 	}
 
 	if output == "debug" {
-		emoji.Println(" :skull: ", BrightRed("No GuardDuty master account found or not enabled"))
+		emoji.Println(" :x: ", BrightRed("No GuardDuty master account found or not enabled"))
 		fmt.Println("")
 	}
 	return false

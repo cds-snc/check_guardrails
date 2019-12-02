@@ -54,7 +54,7 @@ func CheckRootMFA(sess *session.Session, output string) bool {
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Root MFA is not enabled"))
+			emoji.Println(" :x: ", BrightRed("Root MFA is not enabled"))
 			fmt.Println("")
 		}
 		return false

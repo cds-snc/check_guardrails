@@ -65,7 +65,7 @@ func CheckLambdaExport(sess *session.Session, needle, output string) bool {
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :skull: ", Bold(BrightRed("Lambda export function missing")))
+			emoji.Println(" :x: ", Bold(BrightRed("Lambda export function missing")))
 			fmt.Println("")
 		}
 		return false

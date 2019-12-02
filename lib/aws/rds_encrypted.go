@@ -55,7 +55,7 @@ func CheckRDSEncryption(sess *session.Session, regions *ec2.DescribeRegionsOutpu
 
 			if *instance.StorageEncrypted == false {
 				if output == "debug" {
-					emoji.Println(" :skull: ", BrightRed("RDS instance found without encryption"))
+					emoji.Println(" :x: ", BrightRed("RDS instance found without encryption"))
 					fmt.Println("")
 				}
 				return false

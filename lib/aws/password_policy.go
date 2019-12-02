@@ -54,7 +54,7 @@ func CheckPasswordPolicy(sess *session.Session, output string) bool {
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :skull: ", BrightRed("Password can be less than 15 characters"))
+			emoji.Println(" :x: ", BrightRed("Password can be less than 15 characters"))
 			fmt.Println("")
 		}
 		return false

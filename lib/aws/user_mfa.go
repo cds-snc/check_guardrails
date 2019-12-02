@@ -77,7 +77,7 @@ func CheckUserMFA(sess *session.Session, output string) bool {
 
 	if (consoleUsers - breakglassAccounts) != mfaAccounts {
 		if output == "debug" {
-			emoji.Println(" :skull: ", Sprintf(BrightRed("%d out of %d console users have MFA active"), mfaAccounts, consoleUsers))
+			emoji.Println(" :x: ", Sprintf(BrightRed("%d out of %d console users have MFA active"), mfaAccounts, consoleUsers))
 			fmt.Println("")
 		}
 		return false
