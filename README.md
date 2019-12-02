@@ -46,7 +46,7 @@ This tool should only be used to check application level accounts, not organisat
 
 The tool checks the following guardrails:
 
-| Guardrail  |  Verfication method |
+| Guardrail  |  Verification method |
 |---|---|
 | Protect Root / Global Admins Account  | Validates that there is MFA active on root account  |
 | Protect Root / Global Admins Account  | Validates that root account does not have programmatic keys |
