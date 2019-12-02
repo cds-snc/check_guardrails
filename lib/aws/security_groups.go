@@ -51,6 +51,14 @@ func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegio
 		}
 
 		fmt.Println(groups)
+
+		for _, group := range groups.SecurityGroups {
+
+			for _, permissions := range group.IpPermissions {
+				fmt.Println(permissions)
+			}
+
+		}
 	}
 
 	if output == "debug" {
