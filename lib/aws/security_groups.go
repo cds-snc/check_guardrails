@@ -35,7 +35,7 @@ import (
 func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegionsOutput, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS EC2 security groups for Port 80 ingress ..."))
+		fmt.Println(Green("Checking AWS EC2 security groups for port 80 ingress ..."))
 	}
 
 	for _, region := range regions.Regions {
@@ -50,19 +50,54 @@ func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegio
 			return false
 		}
 
-		fmt.Println(groups)
-
 		for _, group := range groups.SecurityGroups {
 
-			for _, permissions := range group.IpPermissions {
-				fmt.Println(permissions)
-			}
+			for _, permission := range group.IpPermissions {
+				failed := false
 
+				// Checks generic protocols
+				if *permission.IpProtocol == "-1" {
+					for _, ipRange := range permission.IpRanges {
+						if *ipRange.CidrIp == "0.0.0.0/0" {
+							failed = true
+						}
+					}
+					for _, ipRange := range permission.Ipv6Ranges {
+						if *ipRange.CidrIpv6 == "::/0" {
+							failed = true
+						}
+					}
+				}
+
+				// Check TCP ranges that include port 80 and are open to all
+				if *permission.IpProtocol == "tcp" {
+					if (80 >= *permission.FromPort) && (80 <= *permission.ToPort) {
+						for _, ipRange := range permission.IpRanges {
+							if *ipRange.CidrIp == "0.0.0.0/0" {
+								failed = true
+							}
+						}
+						for _, ipRange := range permission.Ipv6Ranges {
+							if *ipRange.CidrIpv6 == "::/0" {
+								failed = true
+							}
+						}
+					}
+				}
+
+				if failed {
+					if output == "debug" {
+						emoji.Println(" :skull: ", BrightRed("Security group with port 80 found"))
+						fmt.Println("")
+					}
+					return false
+				}
+			}
 		}
 	}
 
 	if output == "debug" {
-		emoji.Println(" :white_check_mark: ", BrightGreen("No EC2 instances found outside ca-central-1"))
+		emoji.Println(" :white_check_mark: ", BrightGreen("No security groups found exposing port 80"))
 		fmt.Println("")
 	}
 	return true

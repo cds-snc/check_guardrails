@@ -29,63 +29,34 @@ import (
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
-	"github.com/spf13/viper"
 )
 
-func CheckUserMFA(sess *session.Session, output string) bool {
+func CheckRootKeys(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS console users accounts for MFA ..."))
+		fmt.Println(Green("Checking AWS root account for programmatic keys ..."))
 	}
 
 	svc := iam.New(sess)
 
-	result, err := svc.ListUsers(&iam.ListUsersInput{})
+	result, err := svc.GetAccountSummary(&iam.GetAccountSummaryInput{})
 
 	if err != nil {
 		fmt.Println("Error", err)
 		return false
 	}
 
-	mfaAccounts := 0
-	consoleUsers := 0
-	breakglassAccounts := viper.GetInt("breakglass_accounts")
-
-	for _, user := range result.Users {
-		if user == nil {
-			continue
-		}
-
-		password, _ := svc.GetLoginProfile(&iam.GetLoginProfileInput{
-			UserName: user.UserName,
-		})
-
-		if password.LoginProfile != nil {
-			consoleUsers++
-			devices, err := svc.ListMFADevices(&iam.ListMFADevicesInput{
-				UserName: user.UserName,
-			})
-			if err != nil {
-				fmt.Println("Error", err)
-				return false
-			}
-			if len(devices.MFADevices) != 0 {
-				mfaAccounts++
-			}
-		}
-	}
-
-	if (consoleUsers - breakglassAccounts) != mfaAccounts {
+	if *result.SummaryMap["AccountAccessKeysPresent"] == 0 {
 		if output == "debug" {
-			emoji.Println(" :skull: ", Sprintf(BrightRed("%d out of %d console users have MFA active"), mfaAccounts, consoleUsers))
-			fmt.Println("")
-		}
-		return false
-	} else {
-		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", Sprintf(BrightGreen("All user accounts use MFA (taking into account %d breakglass accounts)"), breakglassAccounts))
+			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA has no programmatic keys"))
 			fmt.Println("")
 		}
 		return true
+	} else {
+		if output == "debug" {
+			emoji.Println(" :skull: ", BrightRed("Root has programmatic keys"))
+			fmt.Println("")
+		}
+		return false
 	}
 }

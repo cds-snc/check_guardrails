@@ -79,15 +79,16 @@ var awsCmd = &cobra.Command{
 		}
 
 		audit.RootMFAEnabled = cg.CheckRootMFA(sess, output)
+		cg.CheckRootKeys(sess, output)
 		cg.CheckUserMFA(sess, output)
 		cg.CheckAdminUsers(sess, output)
 		audit.LamdbaExportExists = cg.CheckLambdaExport(sess, lambdaFunction, output)
 		cg.CheckPasswordPolicy(sess, output)
 		// cg.CheckSSO(sess, output)
 		cg.CheckGuardDuty(sess, output)
-		// cg.CheckEC2Residency(sess, regions, output)
+		cg.CheckEC2Residency(sess, regions, output)
 		cg.CheckS3Encryption(sess, output)
-		// cg.CheckRDSEncryption(sess, regions, output)
+		cg.CheckRDSEncryption(sess, regions, output)
 		cg.CheckSecurityGroupsPort80(sess, regions, output)
 
 		if output == "json" {
@@ -114,17 +115,20 @@ func init() {
 	awsCmd.PersistentFlags().String("aws_secret", "", "Your AWS secret")
 	awsCmd.PersistentFlags().String("aws_region", "", "Your AWS region")
 	awsCmd.PersistentFlags().String("lambda_function", "", "Your AWS lambda function that exports logs")
+	awsCmd.PersistentFlags().String("breakglass_accounts", "", "Number of break glass accounts to expect")
 	awsCmd.PersistentFlags().String("output", "", "Output format, default: none, options: none, json")
 
 	viper.SetDefault("output", "debug")
 	viper.SetDefault("aws_region", "ca-central-1")
 	viper.SetDefault("breakglass_accounts", 0)
 	viper.SetDefault("lambda_function", "LandingZoneLocalSNSNotificationForwarder")
+	viper.SetDefault("bucket_safelist", []string{})
 
 	viper.BindPFlag("aws_key", awsCmd.PersistentFlags().Lookup("aws_key"))
 	viper.BindPFlag("aws_secret", awsCmd.PersistentFlags().Lookup("aws_secret"))
 	viper.BindPFlag("aws_region", awsCmd.PersistentFlags().Lookup("aws_region"))
 	viper.BindPFlag("lambda_function", awsCmd.PersistentFlags().Lookup("lambda_function"))
+	viper.BindPFlag("breakglass_accounts", awsCmd.PersistentFlags().Lookup("breakglass_accounts"))
 	viper.BindPFlag("output", awsCmd.PersistentFlags().Lookup("output"))
 
 }

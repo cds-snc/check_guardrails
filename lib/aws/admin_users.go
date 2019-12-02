@@ -27,6 +27,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/spf13/viper"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
@@ -117,6 +118,21 @@ func UsersGroupsHaveAdmin(svc *iam.IAM, user *iam.UserDetail, admin string) bool
 }
 
 func IsUserAdmin(svc *iam.IAM, user *iam.UserDetail, admin string) bool {
+
+	password, _ := svc.GetLoginProfile(&iam.GetLoginProfileInput{
+		UserName: user.UserName,
+	})
+
+	if password.LoginProfile != nil {
+		devices, _ := svc.ListMFADevices(&iam.ListMFADevicesInput{
+			UserName: user.UserName,
+		})
+
+		if len(devices.MFADevices) != 0 {
+			return false
+		}
+	}
+
 	// Check policy, attached policy, and groups (policy and attached policy)
 	policyHasAdmin := UserPolicyHasAdmin(user, admin)
 	if policyHasAdmin {
@@ -154,7 +170,6 @@ func CheckAdminUsers(sess *session.Session, output string) bool {
 	if err != nil {
 		fmt.Println("Got error getting account details")
 		fmt.Println(err.Error())
-		os.Exit(1)
 	}
 
 	// The policy name that indicates administrator access
@@ -167,7 +182,6 @@ func CheckAdminUsers(sess *session.Session, output string) bool {
 		isAdmin := IsUserAdmin(svc, user, adminName)
 
 		if isAdmin {
-			// fmt.Println(*user.UserName)
 			numAdmins += 1
 		}
 	}
@@ -189,20 +203,19 @@ func CheckAdminUsers(sess *session.Session, output string) bool {
 			isAdmin := IsUserAdmin(svc, user, adminName)
 
 			if isAdmin {
-				fmt.Println(*user.UserName)
 				numAdmins += 1
 			}
 		}
 	}
-
-	if numAdmins > 0 {
+	breakglassAccounts := viper.GetInt("breakglass_accounts")
+	if (numAdmins - breakglassAccounts) > 0 {
 		if output == "debug" {
-			emoji.Println(" :exclamation: ", Sprintf(BrightYellow("%d user(s) have admin policies attached"), numAdmins))
+			emoji.Println(" :skull: ", Sprintf(BrightRed("%d user(s) have admin policies attached (%d expected)"), numAdmins, breakglassAccounts))
 			fmt.Println("")
 		}
 	} else {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("No user accounts have admin policies attached"))
+			emoji.Println(" :white_check_mark: ", BrightGreen("No non-accounted for user accounts have admin policies attached"))
 			fmt.Println("")
 		}
 	}

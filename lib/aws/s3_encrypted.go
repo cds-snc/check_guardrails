@@ -28,6 +28,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/kyokomi/emoji"
+	"github.com/spf13/viper"
 
 	. "github.com/logrusorgru/aurora"
 )
@@ -47,13 +48,20 @@ func CheckS3Encryption(sess *session.Session, output string) bool {
 		return false
 	}
 
+	safelist := viper.GetStringSlice("bucket_safelist")
+
+	set := make(map[string]bool)
+	for _, v := range safelist {
+		set[v] = true
+	}
+
 	for _, bucket := range result.Buckets {
 
 		_, err := svc.GetBucketEncryption(&s3.GetBucketEncryptionInput{
 			Bucket: aws.String(*bucket.Name),
 		})
 
-		if err != nil {
+		if err != nil && !set[*bucket.Name] {
 			if output == "debug" {
 				emoji.Println(" :skull: ", BrightRed("S3 bucket found without encryption"))
 				fmt.Println("")
@@ -63,7 +71,7 @@ func CheckS3Encryption(sess *session.Session, output string) bool {
 	}
 
 	if output == "debug" {
-		emoji.Println(" :white_check_mark: ", BrightGreen("No S3 bucket found without encryption"))
+		emoji.Println(" :white_check_mark: ", BrightGreen("No unexpected S3 bucket found without encryption"))
 		fmt.Println("")
 	}
 	return true
