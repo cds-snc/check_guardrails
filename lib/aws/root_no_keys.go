@@ -26,6 +26,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
@@ -34,7 +35,7 @@ import (
 func CheckRootKeys(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS root account for programmatic keys ..."))
+		fmt.Println(Green(i18n.T("check_root_keys")))
 	}
 
 	svc := iam.New(sess)
@@ -48,13 +49,13 @@ func CheckRootKeys(sess *session.Session, output string) bool {
 
 	if *result.SummaryMap["AccountAccessKeysPresent"] == 0 {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA has no programmatic keys"))
+			emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_root_keys_pass")))
 			fmt.Println("")
 		}
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :x: ", BrightRed("Root has programmatic keys"))
+			emoji.Println(" :x: ", BrightRed(i18n.T("check_root_keys_fail")))
 			fmt.Println("")
 		}
 		return false

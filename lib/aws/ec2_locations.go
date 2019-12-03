@@ -27,6 +27,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 	"github.com/kyokomi/emoji"
 
 	. "github.com/logrusorgru/aurora"
@@ -35,7 +36,7 @@ import (
 func CheckEC2Residency(sess *session.Session, regions *ec2.DescribeRegionsOutput, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS EC2 data residency ..."))
+		fmt.Println(Green(i18n.T("check_ec2")))
 	}
 
 	for _, region := range regions.Regions {
@@ -52,7 +53,7 @@ func CheckEC2Residency(sess *session.Session, regions *ec2.DescribeRegionsOutput
 
 		if len(instances.Reservations) > 0 && *region.RegionName != "ca-central-1" {
 			if output == "debug" {
-				emoji.Println(" :x: ", BrightRed("EC2 instances found outside ca-central-1"))
+				emoji.Println(" :x: ", BrightRed(i18n.T("check_ec2_fail")))
 				fmt.Println("")
 			}
 			return false
@@ -60,7 +61,7 @@ func CheckEC2Residency(sess *session.Session, regions *ec2.DescribeRegionsOutput
 	}
 
 	if output == "debug" {
-		emoji.Println(" :white_check_mark: ", BrightGreen("No EC2 instances found outside ca-central-1"))
+		emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_ec2_pass")))
 		fmt.Println("")
 	}
 	return true

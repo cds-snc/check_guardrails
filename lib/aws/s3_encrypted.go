@@ -27,6 +27,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 	"github.com/kyokomi/emoji"
 	"github.com/spf13/viper"
 
@@ -36,7 +37,7 @@ import (
 func CheckS3Encryption(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS S3 bucket encryption settings ..."))
+		fmt.Println(Green(i18n.T("check_s3_enc")))
 	}
 
 	svc := s3.New(sess)
@@ -63,7 +64,7 @@ func CheckS3Encryption(sess *session.Session, output string) bool {
 
 		if err != nil && !set[*bucket.Name] {
 			if output == "debug" {
-				emoji.Println(" :x: ", BrightRed("S3 bucket found without encryption"))
+				emoji.Println(" :x: ", BrightRed(i18n.T("check_s3_enc_fail")))
 				fmt.Println("")
 			}
 			return false
@@ -71,7 +72,7 @@ func CheckS3Encryption(sess *session.Session, output string) bool {
 	}
 
 	if output == "debug" {
-		emoji.Println(" :white_check_mark: ", BrightGreen("No unexpected S3 bucket found without encryption"))
+		emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_s3_enc_pass")))
 		fmt.Println("")
 	}
 	return true

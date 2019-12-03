@@ -61,10 +61,10 @@ func init() {
 	// will be global for your application.
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is .check_guardrails.yaml)")
-	rootCmd.PersistentFlags().String("loc", "", "Language option")
+	rootCmd.PersistentFlags().String("lang", "", "Language option")
 
-	viper.SetDefault("loc", "fr")
-	viper.BindPFlag("loc", rootCmd.PersistentFlags().Lookup("loc"))
+	viper.SetDefault("lang", "en_CA.UTF-8")
+	viper.BindPFlag("lang", rootCmd.PersistentFlags().Lookup("lang"))
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.

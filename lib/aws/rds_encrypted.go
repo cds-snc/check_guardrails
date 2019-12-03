@@ -28,6 +28,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 	"github.com/kyokomi/emoji"
 
 	. "github.com/logrusorgru/aurora"
@@ -36,7 +37,7 @@ import (
 func CheckRDSEncryption(sess *session.Session, regions *ec2.DescribeRegionsOutput, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS RDS encryption settings ..."))
+		fmt.Println(Green(i18n.T("check_rds_enc")))
 	}
 
 	for _, region := range regions.Regions {
@@ -55,7 +56,7 @@ func CheckRDSEncryption(sess *session.Session, regions *ec2.DescribeRegionsOutpu
 
 			if *instance.StorageEncrypted == false {
 				if output == "debug" {
-					emoji.Println(" :x: ", BrightRed("RDS instance found without encryption"))
+					emoji.Println(" :x: ", BrightRed(i18n.T("check_rds_enc_fail")))
 					fmt.Println("")
 				}
 				return false
@@ -64,7 +65,7 @@ func CheckRDSEncryption(sess *session.Session, regions *ec2.DescribeRegionsOutpu
 	}
 
 	if output == "debug" {
-		emoji.Println(" :white_check_mark: ", BrightGreen("No RDS instance found without encryption"))
+		emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_rds_enc_pass")))
 		fmt.Println("")
 	}
 	return true

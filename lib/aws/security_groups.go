@@ -27,6 +27,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 	"github.com/kyokomi/emoji"
 
 	. "github.com/logrusorgru/aurora"
@@ -35,7 +36,7 @@ import (
 func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegionsOutput, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS EC2 security groups for port 80 ingress ..."))
+		fmt.Println(Green(i18n.T("check_sg_p80")))
 	}
 
 	for _, region := range regions.Regions {
@@ -87,7 +88,7 @@ func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegio
 
 				if failed {
 					if output == "debug" {
-						emoji.Println(" :x: ", BrightRed("Security group with port 80 found"))
+						emoji.Println(" :x: ", BrightRed(i18n.T("check_sg_p80_fail")))
 						fmt.Println("")
 					}
 					return false
@@ -97,7 +98,7 @@ func CheckSecurityGroupsPort80(sess *session.Session, regions *ec2.DescribeRegio
 	}
 
 	if output == "debug" {
-		emoji.Println(" :white_check_mark: ", BrightGreen("No security groups found exposing port 80"))
+		emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_sg_p80_pass")))
 		fmt.Println("")
 	}
 	return true

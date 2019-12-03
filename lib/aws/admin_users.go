@@ -27,6 +27,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 	"github.com/spf13/viper"
 
 	"github.com/kyokomi/emoji"
@@ -155,7 +156,7 @@ func IsUserAdmin(svc *iam.IAM, user *iam.UserDetail, admin string) bool {
 func CheckAdminUsers(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS for users with admin policies attached ..."))
+		fmt.Println(Green(i18n.T("check_admin_users")))
 	}
 
 	svc := iam.New(sess)
@@ -210,12 +211,12 @@ func CheckAdminUsers(sess *session.Session, output string) bool {
 	breakglassAccounts := viper.GetInt("breakglass_accounts")
 	if (numAdmins - breakglassAccounts) > 0 {
 		if output == "debug" {
-			emoji.Println(" :x: ", Sprintf(BrightRed("%d user(s) have admin policies attached (%d expected)"), numAdmins, breakglassAccounts))
+			emoji.Println(" :x: ", Sprintf(BrightRed(i18n.T("check_admin_users_fail")), numAdmins, breakglassAccounts))
 			fmt.Println("")
 		}
 	} else {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("No non-accounted for user accounts have admin policies attached"))
+			emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_admin_users_pass")))
 			fmt.Println("")
 		}
 	}

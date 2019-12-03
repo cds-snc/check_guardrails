@@ -26,6 +26,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
@@ -35,7 +36,7 @@ import (
 func CheckUserMFA(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS console users accounts for MFA ..."))
+		fmt.Println(Green(i18n.T("check_user_mfa")))
 	}
 
 	svc := iam.New(sess)
@@ -77,13 +78,13 @@ func CheckUserMFA(sess *session.Session, output string) bool {
 
 	if (consoleUsers - breakglassAccounts) != mfaAccounts {
 		if output == "debug" {
-			emoji.Println(" :x: ", Sprintf(BrightRed("%d out of %d console users have MFA active"), mfaAccounts, consoleUsers))
+			emoji.Println(" :x: ", Sprintf(BrightRed(i18n.T("check_user_mfa_fail")), mfaAccounts, consoleUsers))
 			fmt.Println("")
 		}
 		return false
 	} else {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", Sprintf(BrightGreen("All user accounts use MFA (taking into account %d breakglass accounts)"), breakglassAccounts))
+			emoji.Println(" :white_check_mark: ", Sprintf(BrightGreen(i18n.T("check_user_mfa_pass")), breakglassAccounts))
 			fmt.Println("")
 		}
 		return true

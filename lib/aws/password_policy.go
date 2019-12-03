@@ -26,6 +26,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
@@ -34,7 +35,7 @@ import (
 func CheckPasswordPolicy(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS password policy ..."))
+		fmt.Println(Green(i18n.T("check_password_policy")))
 	}
 
 	svc := iam.New(sess)
@@ -48,13 +49,13 @@ func CheckPasswordPolicy(sess *session.Session, output string) bool {
 
 	if *result.PasswordPolicy.MinimumPasswordLength >= 15 {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Password must be 15 characters or longer"))
+			emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_password_policy_pass")))
 			fmt.Println("")
 		}
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :x: ", BrightRed("Password can be less than 15 characters"))
+			emoji.Println(" :x: ", BrightRed(i18n.T("check_password_policy_fail")))
 			fmt.Println("")
 		}
 		return false

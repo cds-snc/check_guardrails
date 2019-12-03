@@ -50,13 +50,13 @@ func CheckRootMFA(sess *session.Session, output string) bool {
 
 	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
+			emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_root_mfa_pass")))
 			fmt.Println("")
 		}
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :x: ", BrightRed("Root MFA is not enabled"))
+			emoji.Println(" :x: ", BrightRed(i18n.T("check_root_mfa_fail")))
 			fmt.Println("")
 		}
 		return false

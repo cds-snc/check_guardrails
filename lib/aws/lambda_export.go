@@ -26,6 +26,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"
@@ -34,7 +35,7 @@ import (
 func CheckLambdaExport(sess *session.Session, needle, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS for lambda log export function ..."))
+		fmt.Println(Green(i18n.T("check_lambda")))
 	}
 
 	svc := lambda.New(sess)
@@ -59,13 +60,13 @@ func CheckLambdaExport(sess *session.Session, needle, output string) bool {
 
 	if found {
 		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Lambda export function found"))
+			emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_lambda_pass")))
 			fmt.Println("")
 		}
 		return true
 	} else {
 		if output == "debug" {
-			emoji.Println(" :x: ", Bold(BrightRed("Lambda export function missing")))
+			emoji.Println(" :x: ", Bold(BrightRed(i18n.T("check_lambda_fail"))))
 			fmt.Println("")
 		}
 		return false

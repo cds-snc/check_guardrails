@@ -27,6 +27,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/guardduty"
+	"github.com/cdssnc/check_guardrails/lib/i18n"
 	"github.com/kyokomi/emoji"
 
 	. "github.com/logrusorgru/aurora"
@@ -35,7 +36,7 @@ import (
 func CheckGuardDuty(sess *session.Session, output string) bool {
 
 	if output == "debug" {
-		fmt.Println(Green("Checking AWS GuardDuty ..."))
+		fmt.Println(Green(i18n.T("check_guard_duty")))
 	}
 
 	svc := guardduty.New(sess)
@@ -49,7 +50,7 @@ func CheckGuardDuty(sess *session.Session, output string) bool {
 
 	if len(result.DetectorIds) == 0 {
 		if output == "debug" {
-			emoji.Println(" :x: ", BrightRed("No GuardDuty detectors found!"))
+			emoji.Println(" :x: ", BrightRed(i18n.T("check_guard_duty_fail")))
 			fmt.Println("")
 		}
 		return false
@@ -69,7 +70,7 @@ func CheckGuardDuty(sess *session.Session, output string) bool {
 	if accountResult.Master != nil && accountResult.Master.RelationshipStatus != nil {
 		if *accountResult.Master.RelationshipStatus == "Enabled" {
 			if output == "debug" {
-				emoji.Println(" :white_check_mark: ", BrightGreen("GuardDuty found with master account enabled"))
+				emoji.Println(" :white_check_mark: ", BrightGreen(i18n.T("check_guard_duty_pass")))
 				fmt.Println("")
 			}
 			return true
@@ -77,7 +78,7 @@ func CheckGuardDuty(sess *session.Session, output string) bool {
 	}
 
 	if output == "debug" {
-		emoji.Println(" :x: ", BrightRed("No GuardDuty master account found or not enabled"))
+		emoji.Println(" :x: ", BrightRed(i18n.T("check_guard_duty_fail")))
 		fmt.Println("")
 	}
 	return false
