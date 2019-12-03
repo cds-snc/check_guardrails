@@ -19,46 +19,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-package aws
+package i18n
 
 import (
-	"fmt"
+	"io/ioutil"
+	"log"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
-
-	"github.com/cdssnc/check_guardrails/lib/i18n"
-
-	"github.com/kyokomi/emoji"
-	. "github.com/logrusorgru/aurora"
+	"github.com/spf13/viper"
+	"gopkg.in/yaml.v2"
 )
 
-func CheckRootMFA(sess *session.Session, output string) bool {
+type LangDict map[string]map[string]string
 
-	if output == "debug" {
-		fmt.Println(Green(i18n.T("check_root_mfa")))
-	}
+func T(key string) string {
+	lang := viper.GetString("loc")
 
-	svc := iam.New(sess)
+	dict := LangDict{}
 
-	result, err := svc.GetAccountSummary(&iam.GetAccountSummaryInput{})
-
+	data, err := ioutil.ReadFile("lib/i18n/strings.yaml")
 	if err != nil {
-		fmt.Println("Error", err)
-		return false
+		log.Fatalln(err)
 	}
 
-	if *result.SummaryMap["AccountMFAEnabled"] == 1 {
-		if output == "debug" {
-			emoji.Println(" :white_check_mark: ", BrightGreen("Root MFA is enabled"))
-			fmt.Println("")
-		}
-		return true
-	} else {
-		if output == "debug" {
-			emoji.Println(" :x: ", BrightRed("Root MFA is not enabled"))
-			fmt.Println("")
-		}
-		return false
+	err = yaml.Unmarshal([]byte(data), &dict)
+	if err != nil {
+		log.Fatalf("error: %v", err)
 	}
+
+	return dict[key][lang]
 }
