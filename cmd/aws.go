@@ -32,6 +32,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/ec2"
 
 	cg "github.com/cdssnc/check_guardrails/lib/aws"
+	"github.com/cdssnc/check_guardrails/lib/html"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -94,6 +95,10 @@ var awsCmd = &cobra.Command{
 		if output == "json" {
 			b, _ := json.Marshal(audit)
 			fmt.Println(string(b))
+		}
+
+		if output == "html" {
+			html.Render(audit)
 		}
 
 		if !audit.RootMFAEnabled {
