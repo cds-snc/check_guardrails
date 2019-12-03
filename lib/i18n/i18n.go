@@ -21,30 +21,33 @@ THE SOFTWARE.
 */
 package i18n
 
-import (
-	"io/ioutil"
-	"log"
+import "github.com/spf13/viper"
 
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
-)
+type Dict struct {
+	en, fr string
+}
 
-type LangDict map[string]map[string]string
+func Dicts() map[string]Dict {
+	m := make(map[string]Dict)
+
+	m["check_root_mfa"] = Dict{
+		"Checking AWS root account for MFA ...",
+		"Vérification du compte racine AWS pour l'AMF ....",
+	}
+
+	return m
+}
 
 func T(key string) string {
-	lang := viper.GetString("loc")
+	dict := Dicts()
 
-	dict := LangDict{}
-
-	data, err := ioutil.ReadFile("lib/i18n/strings.yaml")
-	if err != nil {
-		log.Fatalln(err)
+	if _, ok := dict[key]; !ok {
+		return key
 	}
 
-	err = yaml.Unmarshal([]byte(data), &dict)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+	if viper.GetString("loc") == "fr" {
+		return dict[key].fr
+	} else {
+		return dict[key].en
 	}
-
-	return dict[key][lang]
 }
