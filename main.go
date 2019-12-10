@@ -21,7 +21,7 @@ THE SOFTWARE.
 */
 package main
 
-import "github.com/cdssnc/check_guardrails/cmd"
+import "github.com/cds-snc/check_guardrails/cmd"
 
 func main() {
 	cmd.Execute()

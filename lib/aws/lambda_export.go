@@ -26,7 +26,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
-	"github.com/cdssnc/check_guardrails/lib/i18n"
+	"github.com/cds-snc/check_guardrails/lib/i18n"
 
 	"github.com/kyokomi/emoji"
 	. "github.com/logrusorgru/aurora"

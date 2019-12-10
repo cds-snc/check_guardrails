@@ -31,8 +31,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
 
-	cg "github.com/cdssnc/check_guardrails/lib/aws"
-	"github.com/cdssnc/check_guardrails/lib/html"
+	cg "github.com/cds-snc/check_guardrails/lib/aws"
+	"github.com/cds-snc/check_guardrails/lib/html"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

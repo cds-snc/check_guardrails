@@ -27,7 +27,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/cdssnc/check_guardrails/lib/i18n"
+	"github.com/cds-snc/check_guardrails/lib/i18n"
 	"github.com/kyokomi/emoji"
 	"github.com/spf13/viper"
 
