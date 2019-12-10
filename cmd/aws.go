@@ -39,7 +39,16 @@ import (
 
 type AwsAudit struct {
 	RootMFAEnabled     bool
+	NoRootKeys         bool
+	UsersHaveMFA       bool
+	NoAdminUsers       bool
 	LamdbaExportExists bool
+	StrongPasswords    bool
+	GuardDutyActive    bool
+	EC2Residency       bool
+	S3Encrypted        bool
+	RDSEncrypted       bool
+	NoPort80           bool
 }
 
 // awsCmd represents the aws command
@@ -80,17 +89,17 @@ var awsCmd = &cobra.Command{
 		}
 
 		audit.RootMFAEnabled = cg.CheckRootMFA(sess, output)
-		cg.CheckRootKeys(sess, output)
-		cg.CheckUserMFA(sess, output)
-		cg.CheckAdminUsers(sess, output)
+		audit.NoRootKeys = cg.CheckRootKeys(sess, output)
+		audit.UsersHaveMFA = cg.CheckUserMFA(sess, output)
+		audit.NoAdminUsers = cg.CheckAdminUsers(sess, output)
 		audit.LamdbaExportExists = cg.CheckLambdaExport(sess, lambdaFunction, output)
-		cg.CheckPasswordPolicy(sess, output)
+		audit.StrongPasswords = cg.CheckPasswordPolicy(sess, output)
 		// cg.CheckSSO(sess, output)
-		cg.CheckGuardDuty(sess, output)
-		cg.CheckEC2Residency(sess, regions, output)
-		cg.CheckS3Encryption(sess, output)
-		cg.CheckRDSEncryption(sess, regions, output)
-		cg.CheckSecurityGroupsPort80(sess, regions, output)
+		audit.GuardDutyActive = cg.CheckGuardDuty(sess, output)
+		audit.EC2Residency = cg.CheckEC2Residency(sess, regions, output)
+		audit.S3Encrypted = cg.CheckS3Encryption(sess, output)
+		audit.RDSEncrypted = cg.CheckRDSEncryption(sess, regions, output)
+		audit.NoPort80 = cg.CheckSecurityGroupsPort80(sess, regions, output)
 
 		if output == "json" {
 			b, _ := json.Marshal(audit)
