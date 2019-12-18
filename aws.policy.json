@@ -19,6 +19,7 @@
             "Effect": "Allow",
             "Action": [
                 "ec2:DescribeInstances",
+                "ec2:DescribeVolumes",
                 "guardduty:ListDetectors",
                 "lambda:ListFunctions",
                 "s3:ListAllMyBuckets",

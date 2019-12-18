@@ -25,6 +25,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"reflect"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -49,6 +50,7 @@ type AwsAudit struct {
 	S3Encrypted        bool
 	RDSEncrypted       bool
 	NoPort80           bool
+	EncryptedVolumes   bool
 }
 
 // awsCmd represents the aws command
@@ -97,6 +99,7 @@ var awsCmd = &cobra.Command{
 		// cg.CheckSSO(sess, output)
 		audit.GuardDutyActive = cg.CheckGuardDuty(sess, output)
 		audit.EC2Residency = cg.CheckEC2Residency(sess, regions, output)
+		audit.EncryptedVolumes = cg.CheckEC2EncryptedVolumes(sess, regions, output)
 		audit.S3Encrypted = cg.CheckS3Encryption(sess, output)
 		audit.RDSEncrypted = cg.CheckRDSEncryption(sess, regions, output)
 		audit.NoPort80 = cg.CheckSecurityGroupsPort80(sess, regions, output)
@@ -110,14 +113,13 @@ var awsCmd = &cobra.Command{
 			html.Render(audit)
 		}
 
-		if !audit.RootMFAEnabled {
-			os.Exit(1)
-		}
+		fields := reflect.ValueOf(audit)
 
-		if !audit.LamdbaExportExists {
-			os.Exit(1)
+		for i := 0; i < fields.NumField(); i++ {
+			if fields.Field(i).Interface() == false {
+				os.Exit(1)
+			}
 		}
-
 		os.Exit(0)
 	},
 }

@@ -29,6 +29,9 @@ Checking AWS GuardDuty ...
  
 Checking AWS EC2 data residency ...
  ❌  EC2 instances found outside ca-central-1
+
+Checking AWS EC2 volumes for encryption ...
+ ❌  EC2 volumes found without encryption
  
 Checking AWS S3 bucket encryption settings ...
  ✅  No unexpected S3 bucket found without encryption
@@ -56,6 +59,7 @@ The tool checks the following guardrails:
 | Cloud Console Access (Developers/Application Owners)  | Validates that non-console users do not have an admin policy attached  |
 | Enterprise Monitoring Accounts  | Validates that GuardDuty is active with a master account enabled  |
 | Data location in Canada | Validates that no EC2 instances exist outside of `CA-CENTRAL-1`  |
+| Protection of data-at-rest | Validates that all EC2 volumes are encrypted |
 | Protection of data-at-rest | Validates that all S3 buckets are encrypted unless they are on the safelist  |
 | Protection of data-at-rest | Validates that all RDS instances are encrypted |
 | Protection of data-in-transit | Validates that no security groups allow traffic on TCP port 80 |

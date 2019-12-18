@@ -177,6 +177,19 @@ func Dicts() map[string]Dict {
 		"Groupe de sécurité avec port 80 trouvé",
 	}
 
+	m["check_ec2_volumes"] = Dict{
+		"Checking AWS EC2 volumes for encryption ...",
+		"Vérification du cryptage des volumes AWS EC2 ...",
+	}
+	m["check_ec2_volumes_pass"] = Dict{
+		"All EC2 volumes are encrypted",
+		"Tous les volumes EC2 sont cryptés",
+	}
+	m["check_ec2_volumes_fail"] = Dict{
+		"EC2 volumes found without encryption",
+		"Volumes EC2 trouvés sans cryptage",
+	}
+
 	return m
 }
 
