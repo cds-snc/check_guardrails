@@ -68,7 +68,7 @@ control "PBMM-cloud-guardrails-7-0-ec2" do
   desc "Verify that all EC2 instances are deployed only within the AWS Canada Central Region"
   aws_regions.region_names.each do |region| 
     describe aws_ec2_instances(aws_region: region) do
-      if region != "us-east-1" 
+      if region != "ca-central-1" 
         its('entries.count') { should cmp 0 }
       end
     end
@@ -81,7 +81,7 @@ control "PBMM-cloud-guardrails-7-0-rds" do
   desc "Verify that all RDS instances are deployed only within the AWS Canada Central Region"
   aws_regions.region_names.each do |region| 
     describe aws_rds_instances(aws_region: region) do
-      if region != "us-east-1" 
+      if region != "ca-central-1" 
         its('entries.count') { should cmp 0 }
       end
     end
