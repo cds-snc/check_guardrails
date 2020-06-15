@@ -2,7 +2,7 @@
 
 title "PBMM Cloud Guardrails"
 
-control "PBMM-cloud-guardrails-3-0" do
+control "PBMM-cloud-guardrails-1-0" do
   impact 0.7                                
   title "Protect Root / Global Admins Account"             
   desc "Validates that there is no access key for the AWS account’s root user"
@@ -11,7 +11,7 @@ control "PBMM-cloud-guardrails-3-0" do
   end
 end
 
-control "PBMM-cloud-guardrails-3-1" do
+control "PBMM-cloud-guardrails-1-1" do
   impact 0.7                                
   title "Protect Root / Global Admins Account"             
   desc "Verify breakglass accounts."
@@ -22,21 +22,21 @@ control "PBMM-cloud-guardrails-3-1" do
   end
 end
 
-control "PBMM-cloud-guardrails-3-2" do
-  impact 0.7                                
-  title "Protect Root / Global Admins Account"             
-  desc "Verify a strong password policy is enabled."
-  describe aws_iam_password_policy do
-    its('minimum_password_length') { should be > 14 }
-  end
-end
-
-control "PBMM-cloud-guardrails-3-3" do
+control "PBMM-cloud-guardrails-1-3" do
   impact 0.7                                
   title "Protect Root / Global Admins Account"             
   desc "Ensure MFA is enabled for the root account"
   describe aws_iam_root_user do
     it { should have_mfa_enabled }
+  end
+end
+
+control "PBMM-cloud-guardrails-2-4" do
+  impact 0.7                                
+  title "Management of administrative privileges"             
+  desc "Verify a strong password policy is enabled."
+  describe aws_iam_password_policy do
+    its('minimum_password_length') { should be >= 14 }
   end
 end
 
@@ -135,5 +135,23 @@ control "PBMM-cloud-guardrails-9-0" do
         it { should_not allow_in(port: 80, ipv4_range: '0.0.0.0/0') }
       end
     end
+  end
+end
+
+control "PBMM-cloud-guardrails-11-0" do
+  impact 0.7                                
+  title "Logging and Montitoring"             
+  desc "Has a AWS-Landing-Zone-BaselineCloudTrail cloud trail"
+  describe aws_cloudtrail_trails do
+    its('names') { should include /AWS\-Landing\-Zone\-BaselineCloudTrail/ }
+  end
+end
+
+control "PBMM-cloud-guardrails-11-1" do
+  impact 0.7                                
+  title "Logging and Montitoring"             
+  desc "Has a AWS-Landing-Zone-Security-Notification SNS topic"
+  describe aws_sns_topics do
+    its('topic_arns') { should include /AWS\-Landing\-Zone\-Security\-Notification/ }
   end
 end
